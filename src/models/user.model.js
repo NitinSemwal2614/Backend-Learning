@@ -1,6 +1,8 @@
 import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt" 
+
+// WHAT IS BCRYPT ? It is designed to be a secure method of hashing passwords because it uses a salt to generate a unique hash for each password.
 
 const userSchema = new Schema(
     {
@@ -45,21 +47,21 @@ const userSchema = new Schema(
         refreshToken: {
             type: String
         }
-
     },
+
     {
         timestamps: true
     }
 )
 
 userSchema.pre("save", async function (next) { // data save hone se pehle usko decypt kardete hai.
-    if(!this.isModified("password")) return next();
+    if(!this.isModified("password")) return next(); // Modify Cases ke liye ..
 
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
-// Check Password
+// To Check the Password
 userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password)
 }
