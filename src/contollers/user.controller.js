@@ -36,7 +36,7 @@ if(
 }
 
 //  CHECKING IF THE USER ALREADY EXISTS IN DATABASE
-const existedUser = User.findOne({
+const existedUser = await User.findOne({
     $or:[{email}, {username}]
 })
 
@@ -59,15 +59,15 @@ const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 if(!avatar){
     throw new ApiError (400 , "Avatar file is Required")
 }
-
-username.create({
+ const user = await User.create({
     fullName,
-    avatar:avatar.url,
-    coverImage : coverImage ?.url || "",
+    avatar: avatar.url,
+    coverImage: coverImage ?.url || "",
     email,
     password,
-    username:username.toLowerCase()
+    username: username.toLowerCase()
 })
+
 
 const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
