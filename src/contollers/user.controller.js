@@ -64,10 +64,8 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage?.url || "",
         email,
         password, 
-        username: (username ?? "").toLowerCase()
+        username: username.toLowerCase()
     });
-    
-
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
     if (!createdUser) {
@@ -103,6 +101,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     const user = await User.findOne({
         $or: [{username}, {email}]
     })
+    console.log("User Mill Gya ");
 
     if (!user) {
         throw new ApiError(404, "User does not exist")
@@ -113,6 +112,7 @@ const loginUser = asyncHandler(async (req, res) =>{
    if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials")
     }
+    console.log("[Password bhi sahi hai !!")
 
    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
@@ -122,7 +122,6 @@ const loginUser = asyncHandler(async (req, res) =>{
         httpOnly: true,
         secure: true
     }
-
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -130,7 +129,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     .json(
         new ApiResponse(
             200, 
-            {
+            {   
                 user: loggedInUser, accessToken, refreshToken
             },
             "User logged In Successfully"
